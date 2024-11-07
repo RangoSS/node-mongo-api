@@ -1,5 +1,14 @@
 import mongoose, { model, Schema } from "mongoose";
 
+import Grid from "gridfs-stream";
+
+// Initialize GridFS
+let gfs;
+mongoose.connection.once("open", () => {
+    gfs = Grid(mongoose.connection.db, mongoose.mongo);
+    gfs.collection("photos"); // This sets the GridFS collection name for photos
+});
+
 const todoSchema = new Schema({
     text: { type: String, required: true },
     priority: { type: String, required: true },

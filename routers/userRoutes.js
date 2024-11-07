@@ -1,6 +1,4 @@
 import express from 'express';
-import upload from '../middleware/upload.js'; // File upload middleware (if needed)
-
 // routers/userRoutes.js
 import { authenticateJWT, authorize } from "../middleware/auth.js";
 
@@ -11,7 +9,8 @@ import {
     createTodo, 
     getTodo,
     postRecipe,
-    loginUser
+    loginUser,
+    getUser
 } from '../controller/userController.js'; // Importing from your controller
 
 const router = express.Router();
@@ -23,10 +22,11 @@ router.post('/login', loginUser); // Login user
 
 router.post('/recipe',authenticateJWT,authorize('create_recipes'), postRecipe);
 
-router.post('/user-info', upload.single('photo'), postUser);
+router.post('/user-info', postUser);
 
 // GET endpoint to retrieve all employees
 router.get('/todo', getTodo);
+router.get('/user-info', getUser);
 
 // GET endpoint to retrieve all employees
 //router.get('/user-info', getUser);
