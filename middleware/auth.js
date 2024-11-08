@@ -1,35 +1,46 @@
 // middleware/auth.js
 import jwt from 'jsonwebtoken';
-import { roles, permissions } from '../roles/roles.js'; // Import roles and permissions
+import { permissions } from '../roles/roles.js';
+import dotenv from "dotenv";
 
+dotenv.config(); // initialize dotenv
+
+// Middleware for authentication
 // Middleware for authentication
 export const authenticateJWT = (req, res, next) => {
     const token = req.header('Authorization')?.split(' ')[1];
-
+    
     if (!token) {
-        return res.sendStatus(403); // Forbidden
+        return res.status(403).json({ success: false, message: 'No token provided.' });
     }
 
-    jwt.verify(token, 'your_jwt_secret', (err, user) => {
+    jwt.verify(token,process.env.jwt_secret, (err, user) => {
         if (err) {
-            return res.sendStatus(403); // Forbidden
+            console.error("Token verification error:", err); // Log the error details
+            return res.status(403).json({ success: false, message: 'Failed to authenticate token.' });
         }
-        req.user = user;
+
+        req.user = user; // Attach user details from the token to the request
+        console.log("Authenticated user:", req.user); // Debugging line to check user details
         next();
     });
 };
 
-// Middleware to check permissions
+// Middleware for authorization
 export const authorize = (action) => {
     return (req, res, next) => {
         const { role } = req.user;
 
+        console.log(`Authorizing action '${action}' for role '${role}'`); // Debugging line
+        console.log("Permissions for role:", permissions[role]); // Check permissions for debugging
+
         if (!permissions[role] || !permissions[role].includes(action)) {
-            return res.status(403).send({
+            return res.status(403).json({
                 success: false,
-                message: "You do not have permission to perform this action.",
+                message: "You do not have permission to perform this action."
             });
         }
+
         next();
     };
 };

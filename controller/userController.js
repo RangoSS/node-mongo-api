@@ -3,6 +3,9 @@ import { Todo, User, Recipe } from "../models/todo_models.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { roles } from "../roles/roles.js";
+import dotenv from "dotenv";
+
+dotenv.config(); // initialize dotenv
 
 
 // User login
@@ -27,7 +30,7 @@ export const loginUser = async (req, res) => {
         }
 
         // If the password matches, create a JWT token
-        const token = jwt.sign({ id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role },process.env.jwt_secret, { expiresIn: '1h' });
 
         // Prepare the response
         const response = {
@@ -38,7 +41,7 @@ export const loginUser = async (req, res) => {
                 name: user.name, 
                 email: user.email, 
                 role: user.role 
-            }
+             }
         };
 
         // Log the response that will be sent to the client
@@ -121,7 +124,7 @@ export const postRecipe = async (req, res) => {
         const { name, ingredients, instructions, category, preparationTime, cookingTime, servings, createdBy } = req.body;
 
         // Check if the required fields are present
-        if (!name || !ingredients || !instructions || !category || !preparationTime || !cookingTime || !servings || !createdBy) {
+        if (!name || !ingredients || !instructions || !category || !preparationTime || !cookingTime || !servings || !createdBy ) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -134,7 +137,8 @@ export const postRecipe = async (req, res) => {
             preparationTime,
             cookingTime,
             servings,
-            createdBy, // This should be the logged-in user's ID
+            createdBy
+        
         });
 
         // Save the recipe to the database
