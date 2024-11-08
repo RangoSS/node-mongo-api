@@ -237,3 +237,77 @@ export const deleteUser = async (req, res) => {
         });
     }
 };
+
+// GET: Retrieve all recipes or a specific recipe by ID
+export const getRecipe = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // If an ID is provided, fetch a single recipe
+        if (id) {
+            const recipe = await Recipe.findById(id).populate('createdBy', 'name'); // Populates createdBy with the user's name
+            if (!recipe) {
+                return res.status(404).json({ message: "Recipe not found" });
+            }
+            return res.status(200).json(recipe);
+        } 
+        
+        // If no ID, fetch all recipes
+        const recipes = await Recipe.find().populate('createdBy', 'name');
+        return res.status(200).json(recipes);
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// PUT: Update an existing recipe
+export const updateRecipe = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, ingredients, instructions, category, preparationTime, cookingTime, servings } = req.body;
+
+        // Check if required fields are provided
+        if (!name || !ingredients || !instructions || !category || !preparationTime || !cookingTime || !servings) {
+            return res.status(400).json({ message: "All fields are required for update" });
+        }
+
+        // Find and update the recipe
+        const updatedRecipe = await Recipe.findByIdAndUpdate(
+            id,
+            { name, ingredients, instructions, category, preparationTime, cookingTime, servings },
+            { new: true }
+        );
+
+        if (!updatedRecipe) {
+            return res.status(404).json({ message: "Recipe not found" });
+        }
+
+        return res.status(200).json({ message: "Recipe updated successfully", recipe: updatedRecipe });
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// DELETE: Delete a recipe
+export const deleteRecipe = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find and delete the recipe
+        const deletedRecipe = await Recipe.findByIdAndDelete(id);
+
+        if (!deletedRecipe) {
+            return res.status(404).json({ message: "Recipe not found" });
+        }
+
+        return res.status(200).json({ message: "Recipe deleted successfully" });
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
