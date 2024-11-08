@@ -119,12 +119,13 @@ export const postUser = async (req, res) => {
  
 //create recipes 
 export const postRecipe = async (req, res) => {
+    console.log("my resd",req.user)
     try {
         // Destructure the incoming data
-        const { name, ingredients, instructions, category, preparationTime, cookingTime, servings, createdBy } = req.body;
+        const { name, ingredients, instructions, category, preparationTime, cookingTime, servings } = req.body;
 
         // Check if the required fields are present
-        if (!name || !ingredients || !instructions || !category || !preparationTime || !cookingTime || !servings || !createdBy ) {
+        if (!name || !ingredients || !instructions || !category || !preparationTime || !cookingTime || !servings  ) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -137,7 +138,7 @@ export const postRecipe = async (req, res) => {
             preparationTime,
             cookingTime,
             servings,
-            createdBy
+            createdBy: req.user.id
         
         });
 

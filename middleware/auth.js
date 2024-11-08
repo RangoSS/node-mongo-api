@@ -9,6 +9,7 @@ dotenv.config(); // initialize dotenv
 // Middleware for authentication
 export const authenticateJWT = (req, res, next) => {
     const token = req.header('Authorization')?.split(' ')[1];
+    console.log(req.headers);
     
     if (!token) {
         return res.status(403).json({ success: false, message: 'No token provided.' });

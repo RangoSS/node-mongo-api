@@ -11,6 +11,7 @@ import {
     postRecipe,
     getRecipe,
     updateRecipe,
+    deleteRecipe,
     loginUser,
     getUser
 } from '../controller/userController.js'; // Importing from your controller
@@ -23,8 +24,10 @@ router.post('/todo', createTodo);
 router.post('/login', loginUser); // Login user
 
 router.post('/recipe',authenticateJWT,authorize('create_recipes'), postRecipe);
-router.get('/recipe',authenticateJWT,authorize('view_users'), getRecipe);
+router.get('/recipe', getRecipe);
+//router.get('/recipe',authenticateJWT,authorize('view_users'), getRecipe);
 router.put('/recipe/:id',authenticateJWT,authorize('edit_recipes'), updateRecipe);
+router.delete('/recipe/:id',authenticateJWT,authorize('delete_recipes'), deleteRecipe);
 
 
 router.post('/user-info', postUser);
